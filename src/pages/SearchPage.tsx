@@ -16,18 +16,32 @@ const SearchPage = () => {
     queryFn: async () => {
       if (!submittedQuery) return { data: [] };
       
-      const response = await fetch(
-        `https://api.deezer.com/search?q=${encodeURIComponent(submittedQuery)}&limit=20`,
-        {
-          method: 'GET',
+      console.log('Searching for:', submittedQuery);
+      
+      try {
+        const response = await fetch(
+          `https://cors-anywhere.herokuapp.com/https://api.deezer.com/search?q=${encodeURIComponent(submittedQuery)}&limit=20`,
+          {
+            method: 'GET',
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest'
+            }
+          }
+        );
+        
+        console.log('Response status:', response.status);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
-      );
-      
-      if (!response.ok) {
-        throw new Error('Failed to search');
+        
+        const data = await response.json();
+        console.log('Search results:', data);
+        return data;
+      } catch (error) {
+        console.error('Search error:', error);
+        throw error;
       }
-      
-      return response.json();
     },
     enabled: !!submittedQuery,
   });
@@ -73,7 +87,10 @@ const SearchPage = () => {
 
       {error && (
         <div className="text-center text-red-400 mb-8">
-          Error searching for music. Please try again.
+          <p>Error searching for music: {error.message}</p>
+          <p className="text-sm mt-2">
+            Note: You may need to visit https://cors-anywhere.herokuapp.com/corsdemo and request temporary access to the demo server.
+          </p>
         </div>
       )}
 
