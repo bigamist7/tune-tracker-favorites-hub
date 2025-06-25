@@ -20,13 +20,7 @@ const SearchPage = () => {
       
       try {
         const response = await fetch(
-          `https://cors-anywhere.herokuapp.com/https://api.deezer.com/search?q=${encodeURIComponent(submittedQuery)}&limit=20`,
-          {
-            method: 'GET',
-            headers: {
-              'X-Requested-With': 'XMLHttpRequest'
-            }
-          }
+          `https://itunes.apple.com/search?term=${encodeURIComponent(submittedQuery)}&media=music&entity=song&limit=20`
         );
         
         console.log('Response status:', response.status);
@@ -37,7 +31,29 @@ const SearchPage = () => {
         
         const data = await response.json();
         console.log('Search results:', data);
-        return data;
+        
+        // Transform iTunes API response to match our Track interface
+        const transformedData = {
+          data: data.results.map((item: any) => ({
+            id: item.trackId,
+            title: item.trackName,
+            duration: Math.floor(item.trackTimeMillis / 1000), // Convert to seconds
+            preview: item.previewUrl,
+            artist: {
+              id: item.artistId,
+              name: item.artistName,
+            },
+            album: {
+              id: item.collectionId,
+              title: item.collectionName,
+              cover_medium: item.artworkUrl100,
+              cover_small: item.artworkUrl60,
+              cover_big: item.artworkUrl600 || item.artworkUrl100,
+            },
+          }))
+        };
+        
+        return transformedData;
       } catch (error) {
         console.error('Search error:', error);
         throw error;
@@ -88,9 +104,7 @@ const SearchPage = () => {
       {error && (
         <div className="text-center text-red-400 mb-8">
           <p>Error searching for music: {error.message}</p>
-          <p className="text-sm mt-2">
-            Note: You may need to visit https://cors-anywhere.herokuapp.com/corsdemo and request temporary access to the demo server.
-          </p>
+          <p className="text-sm mt-2">Please try again with different search terms.</p>
         </div>
       )}
 
