@@ -81,7 +81,7 @@ const MusicCard = ({ track }: MusicCardProps) => {
       </div>
 
       <div className="space-y-3">
-        <div>
+        <div className="h-20 flex flex-col justify-start">
           <h3 className="font-semibold text-white text-lg leading-tight line-clamp-2">
             {track.title}
           </h3>
