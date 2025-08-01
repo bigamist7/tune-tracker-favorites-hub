@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from "react";
-import { Heart, Music } from "lucide-react";
+import { Heart, Music, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Track } from "@/types/music";
 import { cn } from "@/lib/utils";
@@ -33,6 +33,17 @@ const MusicCard = ({ track }: MusicCardProps) => {
     
     // Dispatch custom event to update other components
     window.dispatchEvent(new Event('favoritesUpdated'));
+  };
+
+  const handleDownload = () => {
+    if (track.preview) {
+      const link = document.createElement('a');
+      link.href = track.preview;
+      link.download = `${track.artist?.name} - ${track.title}.mp3`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
 
   const formatDuration = (duration: number) => {
@@ -92,8 +103,18 @@ const MusicCard = ({ track }: MusicCardProps) => {
           />
         )}
 
-        <div className="flex justify-between items-center text-xs text-gray-500">
-          <span>{formatDuration(track.duration)}</span>
+        <div className="flex justify-between items-center">
+          <span className="text-xs text-gray-500">{formatDuration(track.duration)}</span>
+          {track.preview && (
+            <Button
+              onClick={handleDownload}
+              size="sm"
+              className="bg-green-600 hover:bg-green-700 text-white h-8 px-3"
+            >
+              <Download className="w-4 h-4 mr-1" />
+              Download
+            </Button>
+          )}
         </div>
       </div>
     </div>
