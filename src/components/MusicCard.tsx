@@ -4,6 +4,7 @@ import { Heart, Music } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Track } from "@/types/music";
 import { cn } from "@/lib/utils";
+import AudioPlayer from "./AudioPlayer";
 
 interface MusicCardProps {
   track: Track;
@@ -68,30 +69,31 @@ const MusicCard = ({ track }: MusicCardProps) => {
         </Button>
       </div>
 
-      <div className="space-y-2">
-        <h3 className="font-semibold text-white text-lg leading-tight line-clamp-2">
-          {track.title}
-        </h3>
-        <p className="text-gray-400 text-sm line-clamp-1">
-          {track.artist?.name}
-        </p>
-        {track.album?.title && (
-          <p className="text-gray-500 text-xs line-clamp-1">
-            {track.album.title}
+      <div className="space-y-3">
+        <div>
+          <h3 className="font-semibold text-white text-lg leading-tight line-clamp-2">
+            {track.title}
+          </h3>
+          <p className="text-gray-400 text-sm line-clamp-1">
+            {track.artist?.name}
           </p>
+          {track.album?.title && (
+            <p className="text-gray-500 text-xs line-clamp-1">
+              {track.album.title}
+            </p>
+          )}
+        </div>
+
+        {track.preview && (
+          <AudioPlayer
+            src={track.preview}
+            title={track.title}
+            artist={track.artist?.name || ''}
+          />
         )}
+
         <div className="flex justify-between items-center text-xs text-gray-500">
           <span>{formatDuration(track.duration)}</span>
-          {track.preview && (
-            <a
-              href={track.preview}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-purple-400 hover:text-purple-300 transition-colors"
-            >
-              Preview
-            </a>
-          )}
         </div>
       </div>
     </div>
